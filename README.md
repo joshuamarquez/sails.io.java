@@ -1,2 +1,2 @@
 # sails.io.java
-Java SDK for communicating w/ Sails via sockets
+Java library for communicating w/ Sails via sockets
