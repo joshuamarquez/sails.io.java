@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sails.io.java.iml" filepath="$PROJECT_DIR$/.idea/modules/sails.io.java.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sails.io.java_main.iml" filepath="$PROJECT_DIR$/.idea/modules/sails.io.java_main.iml" group="sails.io.java" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sails.io.java_test.iml" filepath="$PROJECT_DIR$/.idea/modules/sails.io.java_test.iml" group="sails.io.java" />
     </modules>
   </component>
 </project>

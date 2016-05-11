@@ -1,4 +1,4 @@
-group 'me.joshuamarquez.sails.io'
+group 'me.joshuamarquez'
 version '0.1.0'
 
 apply plugin: 'java'
