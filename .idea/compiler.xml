@@ -18,5 +18,9 @@
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="sails.io.java_main" target="1.5" />
+      <module name="sails.io.java_test" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
