@@ -3,14 +3,14 @@ package me.joshuamarquez.sails.io;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class WebSocketRequest {
+public class SailsSocketRequest {
 
     private String method;
     private String url;
     private JSONObject params;
     private JSONObject headers;
 
-    private WebSocketListener listener;
+    private SailsSocketResponse.Listener listener;
 
     private final String KEY_METHOD = "method";
     private final String KEY_URL = "url";
@@ -28,7 +28,7 @@ public class WebSocketRequest {
      * @param method HTTP request method [optional]
      * @param url destination URL
      */
-    public WebSocketRequest(String method, String url, WebSocketListener listener) {
+    public SailsSocketRequest(String method, String url, SailsSocketResponse.Listener listener) {
         this(method, url, null, null, listener);
     }
 
@@ -39,7 +39,7 @@ public class WebSocketRequest {
      * @param url destination URL
      * @param params parameters to send with the request [optional]
      */
-    public WebSocketRequest(String method, String url, JSONObject params, WebSocketListener listener) {
+    public SailsSocketRequest(String method, String url, JSONObject params, SailsSocketResponse.Listener listener) {
         this(method, url, params, null, listener);
     }
 
@@ -51,7 +51,8 @@ public class WebSocketRequest {
      * @param params parameters to send with the request [optional]
      * @param headers headers to send with the request [optional]
      */
-    public WebSocketRequest(String method, String url, JSONObject params, JSONObject headers, WebSocketListener listener) {
+    public SailsSocketRequest(String method, String url, JSONObject params, JSONObject headers,
+                            SailsSocketResponse.Listener listener) {
         this.method = method;
         this.url = url;
 
@@ -86,7 +87,7 @@ public class WebSocketRequest {
         return headers;
     }
 
-    public WebSocketListener getListener() {
+    public SailsSocketResponse.Listener getListener() {
         return listener;
     }
 
