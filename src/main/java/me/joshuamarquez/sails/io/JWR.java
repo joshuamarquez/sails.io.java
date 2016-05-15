@@ -24,8 +24,8 @@ public class JWR {
      *         => :body
      *         => :headers
      */
-    public JWR(Object response) {
-        jsonObjectResponse = (JSONObject) response;
+    public JWR(JSONObject response) {
+        jsonObjectResponse = response;
 
         try {
             statusCode = jsonObjectResponse.getInt("statusCode");
@@ -56,6 +56,10 @@ public class JWR {
 
     public String getBody() {
         return body;
+    }
+
+    public boolean isError() {
+        return this.statusCode < 200 || this.statusCode >= 400;
     }
 
     public JSONObject getJsonObjectResponse() {
