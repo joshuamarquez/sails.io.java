@@ -6,6 +6,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 
 import java.util.Collections;
@@ -26,6 +27,9 @@ public class SailsSocket {
 
     private boolean isConnecting;
 
+    private final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
+    private final static String SDK_VERSION_VALUE = "0.13.7";
+
     // Global headers
     private Map<String, String> headers = Collections.emptyMap();
 
@@ -33,6 +37,20 @@ public class SailsSocket {
 
     public SailsSocket(String url, IO.Options options) throws URISyntaxException {
         this.options = options;
+
+        /**
+         * Solves problem: "Sails v0.11.x is not compatible with the socket.io/sails.io.js
+         * client SDK version you are using (0.9.0). Please see the v0.11 migration guide
+         * on http://sailsjs.org for more information".
+         *
+         * https://github.com/balderdashy/sails/issues/2640
+         */
+        String sdkVersionQuery = String.join("=", SDK_VERSION_KEY, SDK_VERSION_VALUE);
+        if (this.options.query == null) {
+            this.options.query = sdkVersionQuery;
+        } else {
+            this.options.query = String.join("&", this.options.query, sdkVersionQuery);
+        }
 
         socket = IO.socket(url, this.options);
 
