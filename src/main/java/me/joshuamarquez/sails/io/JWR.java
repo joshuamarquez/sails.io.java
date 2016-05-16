@@ -25,9 +25,9 @@ public class JWR {
      *         => :headers
      */
     public JWR(JSONObject response) {
-        jsonObjectResponse = response;
-
         try {
+            jsonObjectResponse = response;
+
             statusCode = jsonObjectResponse.getInt("statusCode");
 
             headers = new HashMap<String, String>();
