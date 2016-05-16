@@ -17,10 +17,12 @@ public class SailsSocketRequest {
     private final String KEY_PARAMS = "params";
     private final String KEY_HEADERS = "headers";
 
-    public final String METHOD_GET = "get";
-    public final String METHOD_POST = "post";
-    public final String METHOD_PUT = "put";
-    public final String METHOD_DELETE = "delete";
+    public final static String METHOD_GET = "get";
+    public final static String METHOD_POST = "post";
+    public final static String METHOD_PUT = "put";
+    public final static String METHOD_DELETE = "delete";
+
+    private String tag;
 
     /**
      * Makes request with no params.
@@ -28,8 +30,8 @@ public class SailsSocketRequest {
      * @param method HTTP request method [optional]
      * @param url destination URL
      */
-    public SailsSocketRequest(String method, String url, SailsSocketResponse.Listener listener) {
-        this(method, url, null, null, listener);
+    public SailsSocketRequest(String tag, String method, String url, SailsSocketResponse.Listener listener) {
+        this(tag, method, url, null, null, listener);
     }
 
     /**
@@ -39,8 +41,9 @@ public class SailsSocketRequest {
      * @param url destination URL
      * @param params parameters to send with the request [optional]
      */
-    public SailsSocketRequest(String method, String url, JSONObject params, SailsSocketResponse.Listener listener) {
-        this(method, url, params, null, listener);
+    public SailsSocketRequest(String tag, String method, String url, JSONObject params,
+                              SailsSocketResponse.Listener listener) {
+        this(tag, method, url, params, null, listener);
     }
 
     /**
@@ -51,24 +54,22 @@ public class SailsSocketRequest {
      * @param params parameters to send with the request [optional]
      * @param headers headers to send with the request [optional]
      */
-    public SailsSocketRequest(String method, String url, JSONObject params, JSONObject headers,
+    public SailsSocketRequest(String tag, String method, String url, JSONObject params, JSONObject headers,
                             SailsSocketResponse.Listener listener) {
-        this.method = method;
-        this.url = url;
-
-        this.listener = listener;
-
         if (params == null) {
             this.params = new JSONObject();
-        } else {
-            this.params = params;
         }
 
         if (headers == null) {
             this.headers = new JSONObject();
-        } else {
-            this.headers = headers;
         }
+
+        this.tag = tag;
+        this.method = method;
+        this.url = url;
+        this.params = params;
+        this.headers = headers;
+        this.listener = listener;
     }
 
     public String getMethod() {
@@ -89,6 +90,10 @@ public class SailsSocketRequest {
 
     public SailsSocketResponse.Listener getListener() {
         return listener;
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public JSONObject toJSONObject() throws JSONException{
