@@ -1,6 +1,5 @@
 package me.joshuamarquez.sails.io;
 
-import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -17,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static me.joshuamarquez.sails.io.SailsSocketRequest.*;
+import static me.joshuamarquez.sails.io.SailsIOClient.*;
 
 public class SailsSocket {
 
@@ -27,10 +27,7 @@ public class SailsSocket {
 
     private boolean isConnecting;
 
-    private final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
-    private final static String SDK_VERSION_VALUE = "0.13.7";
-
-    // Global headers
+    // Socket headers
     private Map<String, String> headers = Collections.emptyMap();
 
     private Set<SailsSocketRequest> requestQueue;
@@ -67,7 +64,14 @@ public class SailsSocket {
     }
 
     /**
-     * Set HTTP headers to be sent in every request.
+     * Get HTTP headers to be sent in every request for this socket.
+     */
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Set HTTP headers to be sent in every request for this socket.
      *
      * @param headers
      */
@@ -79,13 +83,13 @@ public class SailsSocket {
 
     /**
      * Drains request queue sending each
-     * request to {@link #emitFrom(SailsSocketRequest)}
+     * request to {@link SailsIOClient#emitFrom(Socket, SailsSocketRequest)}
      */
     private void drainRequestQueue() {
         synchronized (requestQueue) {
             if (!requestQueue.isEmpty()) {
                 for (SailsSocketRequest request : requestQueue) {
-                    emitFrom(request);
+                    SailsIOClient.getInstance().emitFrom(socket, request);
                 }
 
                 requestQueue.clear();
@@ -273,12 +277,15 @@ public class SailsSocket {
                                SailsSocketResponse.Listener listener) {
         Map<String, String> requestHeaders = new HashMap<String, String>();
 
-        // Merge global headers in
+        // Merge Globals and Socket headers in Request Headers
         if (headers != null && !headers.isEmpty()) {
-            // Merge global headers into requestHeaders
+            // Merge Global headers into requestHeaders
+            requestHeaders.putAll(SailsIOClient.getInstance().getHeaders());
+
+            // Merge Socket headers into requestHeaders
             requestHeaders.putAll(this.headers);
 
-            // Merge request headers headers into requestHeaders
+            // Merge Socket headers headers into requestHeaders
             requestHeaders.putAll(headers);
         }
 
@@ -293,34 +300,10 @@ public class SailsSocket {
                 requestQueue.add(request);
             }
         } else {
-            emitFrom(request);
+            SailsIOClient.getInstance().emitFrom(socket, request);
         }
 
         return this;
-    }
-
-    /**
-     * Private method used by {@link SailsSocket#request}
-     *
-     * @param request {@link SailsSocketRequest}
-     */
-    private void emitFrom(SailsSocketRequest request) {
-        // Name of the appropriate socket.io listener on the server
-        // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
-        String sailsEndpoint = request.getMethod();
-
-        // Since Listener is embedded in request, retrieve it.
-        SailsSocketResponse.Listener listener = request.getListener();
-
-        socket.emit(sailsEndpoint, request.toJSONObject(), new Ack() {
-            @Override
-            public void call(Object... args) {
-                // Send back jsonWebSocketResponse
-                if (listener != null) {
-                    listener.onResponse(new JWR((JSONObject) args[0]));
-                }
-            }
-        });
     }
 
     /**
