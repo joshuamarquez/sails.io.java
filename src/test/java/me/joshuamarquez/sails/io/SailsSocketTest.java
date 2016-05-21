@@ -14,11 +14,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
-public class SailsSocketTest {
+public class SailsSocketTest extends SailsServer {
 
-    private final static int TIMEOUT = 7000;
-
-    private final String url = "http://localhost:1337";
+    private final String url = "http://localhost:" + PORT;
 
     private final String TAG = "SailsSocketTest";
 

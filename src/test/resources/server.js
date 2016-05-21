@@ -6,7 +6,7 @@ var Sails = require('sails/lib/app');
 
 // Use a weird port to avoid tests failing if we
 // forget to shut down another Sails app
-var TEST_SERVER_PORT = 1577;
+var TEST_SERVER_PORT = process.env.PORT || 1577;
 
 /**
  * @type {Object}
@@ -46,14 +46,9 @@ module.exports = {
 
   },
 
-  teardown: function (done) {
+  teardown: function () {
 
     // Tear down sails server
-    global.server.lower(function () {
-
-     // Delete globals (just in case-- shouldn't matter)
-     delete global.server;
-     return setTimeout(done, 100);
-    });
+    global.server.lower();
   }
 };
