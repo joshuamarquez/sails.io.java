@@ -1,0 +1,25 @@
+{
+  "get /hello": { "body": "ok!" },
+  "get /someJSON": {
+    "body": { "foo": "bar" }
+  },
+  "get /someError": {
+    "body": { "blah": "blah" },
+    "statusCode": 501
+  },
+  "get /headers": {
+    "req": "headers.x-test-header-one",
+    "body": "foo"
+  },
+  "get /headersOverride": {
+    "req": "headers.x-test-header-one",
+    "body": "baz"
+  },
+  "get /headersRemove": {
+    "req": "headers.x-test-header-one",
+    "body": "undefined"
+  },
+  "delete /hello": { "body": "deleted!"},
+  "post /hello": { "body": "posted!"},
+  "put /hello": { "body": "putted!"}
+}
