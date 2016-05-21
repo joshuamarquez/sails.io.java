@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "sails": "~0.12.1"
+  }
+}
