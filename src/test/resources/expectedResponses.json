@@ -19,6 +19,9 @@
     "req": "headers.x-test-header-one",
     "body": "undefined"
   },
+  "get /emptyBody": {
+    "body": null
+  },
   "delete /hello": { "body": "deleted!"},
   "post /hello": { "body": "posted!"},
   "put /hello": { "body": "putted!"}
