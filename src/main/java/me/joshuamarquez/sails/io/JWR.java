@@ -14,7 +14,7 @@ public class JWR {
 
     private int statusCode;
     private Map<String, String> headers;
-    private String body;
+    private Object body;
 
     private JSONObject jsonObjectResponse;
 
@@ -40,7 +40,7 @@ public class JWR {
                 headers.put(key, jsonHeaders.getString(key));
             }
 
-            body = jsonObjectResponse.getString("body");
+            body = jsonObjectResponse.get("body");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public class JWR {
         return headers;
     }
 
-    public String getBody() {
+    public Object getBody() {
         return body;
     }
 
