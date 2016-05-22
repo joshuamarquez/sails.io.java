@@ -3,10 +3,13 @@
  */
 
 var Sails = require('sails/lib/app');
+var _ = require('lodash');
+var fs = require('fs');
 
 // Use a weird port to avoid tests failing if we
 // forget to shut down another Sails app
 var TEST_SERVER_PORT = process.env.PORT || 1577;
+var EXPECTED_RESPONSES = JSON.parse(fs.readFileSync('src/test/resources/expectedResponses.json', 'utf-8'));
 
 /**
  * @type {Object}
@@ -41,6 +44,7 @@ module.exports = {
 
       // Globalize sails app as `server`
       global.server = app;
+      setupRoutes(EXPECTED_RESPONSES);
       return cb(err);
     });
 
@@ -52,3 +56,20 @@ module.exports = {
     global.server.lower();
   }
 };
+
+// Bind routes which respond with the expected data.
+function setupRoutes(expectedResponses) {
+    _.each(expectedResponses, function (expectedResponse, routeAddress) {
+        server.router.bind(routeAddress, function (req, res) {
+            return res.send(expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
+        });
+    });
+}
+
+//Helper function we use to do a lookup on an object.
+//It splits the dot string to an object path.
+function _dotToObject(obj, path) {
+    return path.split('.').reduce(function objectIndex(obj, i) {
+        return obj[i];
+    }, obj);
+}
