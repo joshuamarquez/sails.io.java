@@ -46,9 +46,7 @@ public class SailsIOClient {
     }
 
     /**
-     * Set HTTP headers to be sent in every request for all sockets.
-     *
-     * @param headers
+     * @param headers HTTP headers to be sent in every request for all sockets.
      */
     public void setHeaders(Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
@@ -69,7 +67,7 @@ public class SailsIOClient {
      *
      * @param request {@link SailsSocketRequest}
      */
-    public void emitFrom(Socket socket, SailsSocketRequest request) {
+    void emitFrom(Socket socket, SailsSocketRequest request) {
         // Name of the appropriate socket.io listener on the server
         // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
         String sailsEndpoint = request.getMethod();
