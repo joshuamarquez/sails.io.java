@@ -43,7 +43,10 @@ module.exports = {
 
       // Globalize sails app as `server`
       global.server = app;
+
+      // Bind routes
       setupRoutes(EXPECTED_RESPONSES);
+
       return cb(err);
     });
 
