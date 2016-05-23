@@ -13,7 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -261,14 +263,48 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
-    public void shouldGetCookieFromSetCookieHeader() throws Exception {
+    public void testTwoSocketsSharingSession() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsSocket sailsSocket1 = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket2 = new SailsSocket(url, new IO.Options());
+
         // Make a request to Sails' built-in /__getcookie route
         HttpResponse<String>stringResponse = Unirest.get("http://localhost:1577/__getcookie").asString();
         String setCookieHeader = stringResponse.getHeaders().get("set-cookie").toString();
         // Get the cookie data from the set-cookie header
         String cookie = setCookieHeader.substring(setCookieHeader.indexOf("[") + 1, setCookieHeader.indexOf(";"));
 
-        assertNotNull(cookie);
+        Map<String, List<String>> initialHeaders = new HashMap<String, List<String>>() {
+            {
+                put("cookie", Arrays.asList(cookie));
+            }
+        };
+
+        sailsSocket1.setInitialConnectionHeaders(initialHeaders);
+        sailsSocket2.setInitialConnectionHeaders(initialHeaders);
+
+        sailsSocket1.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
+            @Override
+            public void onResponse(JWR response) {
+                assertEquals(Integer.parseInt(response.getBody().toString()), 1);
+
+                sailsSocket2.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
+                    @Override
+                    public void onResponse(JWR response) {
+                        assertEquals(Integer.parseInt(response.getBody().toString()), 2);
+
+                        values.offer("done");
+                    }
+                });
+                sailsSocket2.connect();
+            }
+        });
+
+        sailsSocket1.connect();
+        values.take();
+        sailsSocket1.disconnect();
+        sailsSocket2.disconnect();
     }
 
     /**
