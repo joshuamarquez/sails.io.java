@@ -35,7 +35,6 @@ module.exports = {
       },
       routes: {
         '/greeting': function(req, res) {
-          res.header("Content-type","application/javascript");
           res.ok("Hello world!");
         }
       }
