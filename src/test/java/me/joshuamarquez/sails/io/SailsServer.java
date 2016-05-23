@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class SailsServer {
@@ -25,6 +26,7 @@ public abstract class SailsServer {
 
     @Before
     public void startServer() throws IOException, InterruptedException {
+        logger.setLevel(Level.FINE);
         logger.fine("Starting server ...");
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -55,7 +57,7 @@ public abstract class SailsServer {
                 String line;
                 try {
                     while ((line = reader.readLine()) != null) {
-                        logger.fine("SERVER ERR: " + line);
+                        logger.severe("SERVER ERR: " + line);
                     }
                 } catch (IOException e) {
                     logger.warning(e.getMessage());
