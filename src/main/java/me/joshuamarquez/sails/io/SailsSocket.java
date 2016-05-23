@@ -1,18 +1,17 @@
 package me.joshuamarquez.sails.io;
 
 import io.socket.client.IO;
+import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import io.socket.engineio.client.Transport;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static me.joshuamarquez.sails.io.SailsSocketRequest.*;
@@ -33,6 +32,9 @@ public class SailsSocket {
     private Set<SailsSocketRequest> requestQueue;
 
     public SailsSocket(String url, IO.Options options) throws URISyntaxException {
+        // Set logger level to FINE
+        logger.setLevel(Level.FINE);
+
         this.options = options;
 
         /**
@@ -79,6 +81,31 @@ public class SailsSocket {
         if (headers != null && !headers.isEmpty()) {
             this.headers = headers;
         }
+    }
+
+    /**
+     * @param initialHeaders initial headers to be send on connection
+     */
+    public void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+        // Called upon transport creation.
+        socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Transport transport = (Transport)args[0];
+
+                transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, List<String>> headers = (Map<String, List<String>>)args[0];
+                        // modify request headers
+                        if (initialHeaders != null && !initialHeaders.isEmpty()) {
+                            headers.putAll(initialHeaders);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**
