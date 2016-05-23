@@ -175,6 +175,15 @@ public class SailsSocket {
     }
 
     /**
+     * Returns Socket.IO instance
+     *
+     * @return {@link Socket}
+     */
+    public Socket getSocket() {
+        return socket;
+    }
+
+    /**
      *
      * Chainable method to unbind an event to the socket.
      *
@@ -277,15 +286,18 @@ public class SailsSocket {
                                SailsSocketResponse.Listener listener) {
         Map<String, String> requestHeaders = new HashMap<String, String>();
 
-        // Merge Globals and Socket headers in Request Headers
+        /**
+         * Merge Globals, Socket headers and Request Headers into requestHeaders
+         */
+
+        // Merge Global headers
+        requestHeaders.putAll(SailsIOClient.getInstance().getHeaders());
+
+        // Merge Socket headers
+        requestHeaders.putAll(this.headers);
+
+        // Merge Request headers
         if (headers != null && !headers.isEmpty()) {
-            // Merge Global headers into requestHeaders
-            requestHeaders.putAll(SailsIOClient.getInstance().getHeaders());
-
-            // Merge Socket headers into requestHeaders
-            requestHeaders.putAll(this.headers);
-
-            // Merge Socket headers headers into requestHeaders
             requestHeaders.putAll(headers);
         }
 
