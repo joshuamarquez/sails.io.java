@@ -281,9 +281,6 @@ public class SailsSocketTest extends SailsServer {
             }
         };
 
-        sailsSocket1.setInitialConnectionHeaders(initialHeaders);
-        sailsSocket2.setInitialConnectionHeaders(initialHeaders);
-
         sailsSocket1.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
             public void onResponse(JWR response) {
@@ -297,11 +294,11 @@ public class SailsSocketTest extends SailsServer {
                         values.offer("done");
                     }
                 });
-                sailsSocket2.connect();
+                sailsSocket2.connect(initialHeaders);
             }
         });
 
-        sailsSocket1.connect();
+        sailsSocket1.connect(initialHeaders);
         values.take();
         sailsSocket1.disconnect();
         sailsSocket2.disconnect();

@@ -85,8 +85,9 @@ public class SailsSocket {
 
     /**
      * @param initialHeaders initial headers to be send on connection
+     *
      */
-    public void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    private void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -122,6 +123,17 @@ public class SailsSocket {
                 requestQueue.clear();
             }
         }
+    }
+
+    /**
+     * Begin connecting private socket to the server
+     * with initial connection headers.
+     *
+     * @return {@link SailsSocket}
+     */
+    public SailsSocket connect(Map<String, List<String>> initialHeaders) {
+        setInitialConnectionHeaders(initialHeaders);
+        return connect();
     }
 
     /**
