@@ -22,6 +22,14 @@
   "get /emptyBody": {
     "body": null
   },
+  "get /queryJSON": {
+    "req": "socket.handshake.query.x-test-query-one",
+    "body": { "foo": "bar" }
+  },
+  "get /initHeaders": {
+    "req": "socket.handshake.headers.x-test-init-header-one",
+    "body": "init-header-value"
+  },
   "delete /hello": { "body": "deleted!"},
   "post /hello": { "body": "posted!"},
   "put /hello": { "body": "putted!"}

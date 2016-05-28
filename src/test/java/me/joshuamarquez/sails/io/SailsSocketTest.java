@@ -223,6 +223,37 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
+    public void testQueryOption() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        IO.Options options = new IO.Options();
+        options.query = "x-test-query-one={\"foo\":\"bar\"}";
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, options);
+
+        sailsSocket.get(TAG, "/queryJSON", null, buildResponseListener("get /queryJSON", values));
+
+        sailsSocket.connect();
+        values.take();
+        sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testInitialHeaders() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
+        sailsSocket.get(TAG, "/initHeaders", null, buildResponseListener("get /initHeaders", values));
+
+        sailsSocket.connect(new HashMap<String, List<String>>(){
+            {
+                put("x-test-init-header-one", Arrays.asList("init-header-value"));
+            }
+        });
+        values.take();
+        sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
     public void testOneSocketSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
