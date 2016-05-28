@@ -49,6 +49,8 @@ sailsSocket.connect();
 
 ### Headers
 
+Dictionary of headers to be sent by default with every request. Can be overridden the headers option in `.request()`.
+
 Create headers.
 
 ```java
