@@ -62,6 +62,23 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
+    public void isConnectedShouldReturnTrue() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                assertThat(sailsSocket.isConnected(), is(true));
+
+                values.offer("done");
+            }
+        });
+        sailsSocket.connect();
+        values.take();
+        sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
     public void shouldReturnStatusCodeNotFound() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 

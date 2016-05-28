@@ -189,7 +189,7 @@ public class SailsSocket {
         if (this.isConnecting) {
             throw new Error("Cannot connect- socket is already connecting");
         }
-        if (socket.connected()) {
+        if (isConnected()) {
             throw new Error("Cannot connect- socket is already connected");
         }
         socket.connect();
@@ -205,12 +205,19 @@ public class SailsSocket {
     public SailsSocket disconnect() {
         this.isConnecting = false;
 
-        if (!socket.connected()) {
+        if (!isConnected()) {
             throw new Error("Cannot disconnect- socket is already disconnected");
         }
         socket.disconnect();
 
         return this;
+    }
+
+    /**
+     * @return whether socket is connected or not.
+     */
+    public boolean isConnected() {
+        return socket.connected();
     }
 
     /**
@@ -346,7 +353,7 @@ public class SailsSocket {
 
         // If this socket is not connected yet, queue up this request
         // instead of sending it (so it can be replayed when the socket comes online.)
-        if (!socket.connected()) {
+        if (!isConnected()) {
             synchronized (requestQueue) {
                 requestQueue.add(request);
             }
