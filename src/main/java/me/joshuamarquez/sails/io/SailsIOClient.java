@@ -30,8 +30,8 @@ public class SailsIOClient {
         return instance;
     }
 
-    public synchronized static SailsSocket socket(String url, IO.Options options) throws URISyntaxException {
-        if (globalSailsSocket == null && url != null && options != null) {
+    public synchronized SailsSocket socket(String url, IO.Options options) throws URISyntaxException {
+        if (globalSailsSocket == null) {
             globalSailsSocket = new SailsSocket(url, options);
         }
 
