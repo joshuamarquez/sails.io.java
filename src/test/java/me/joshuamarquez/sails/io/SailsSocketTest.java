@@ -31,7 +31,7 @@ public class SailsSocketTest extends SailsServer {
 
     private JSONObject EXPECTED_RESPONSES;
 
-    private Map<String, String> headers = new HashMap<String, String>(){
+    private Map<String, String> headers = new HashMap<String, String>() {
         {
             put("x-test-header-one", "foo");
             put("x-test-header-two", "bar");
@@ -192,7 +192,7 @@ public class SailsSocketTest extends SailsServer {
         SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersOverride", null,
-                new HashMap<String, String>(){
+                new HashMap<String, String>() {
                     {
                         put("x-test-header-one", "baz");
                     }
@@ -211,7 +211,7 @@ public class SailsSocketTest extends SailsServer {
         SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersRemove", null,
-                new HashMap<String, String>(){
+                new HashMap<String, String>() {
                     {
                         put("x-test-header-one", null);
                     }
@@ -244,7 +244,7 @@ public class SailsSocketTest extends SailsServer {
         SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
         sailsSocket.get(TAG, "/initHeaders", null, buildResponseListener("get /initHeaders", values));
 
-        sailsSocket.connect(new HashMap<String, List<String>>(){
+        sailsSocket.connect(new HashMap<String, List<String>>() {
             {
                 put("x-test-init-header-one", Arrays.asList("init-header-value"));
             }
@@ -350,6 +350,37 @@ public class SailsSocketTest extends SailsServer {
         values.take();
         sailsSocket1.disconnect();
         sailsSocket2.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testOneSocketNOSession() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+
+        sailsSocket.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
+            @Override
+            public void onResponse(JWR response) {
+                assertEquals(response.getBody().toString(), "NO_SESSION");
+
+                sailsSocket.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
+                    @Override
+                    public void onResponse(JWR response) {
+                        assertEquals(response.getBody().toString(), "NO_SESSION");
+
+                        values.offer("done");
+                    }
+                });
+            }
+        });
+
+        sailsSocket.connect(new HashMap<String, List<String>>() {
+            {
+                put("nosession", Arrays.asList("true"));
+            }
+        });
+        values.take();
+        sailsSocket.disconnect();
     }
 
     /**
