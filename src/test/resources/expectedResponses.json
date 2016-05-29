@@ -1,0 +1,36 @@
+{
+  "get /hello": { "body": "ok!" },
+  "get /someJSON": {
+    "body": { "foo": "bar" }
+  },
+  "get /someError": {
+    "body": { "blah": "blah" },
+    "statusCode": 501
+  },
+  "get /headers": {
+    "req": "headers.x-test-header-one",
+    "body": "foo"
+  },
+  "get /headersOverride": {
+    "req": "headers.x-test-header-one",
+    "body": "baz"
+  },
+  "get /headersRemove": {
+    "req": "headers.x-test-header-one",
+    "body": "headerRemoved"
+  },
+  "get /emptyBody": {
+    "body": null
+  },
+  "get /queryJSON": {
+    "req": "socket.handshake.query.x-test-query-one",
+    "body": { "foo": "bar" }
+  },
+  "get /initHeaders": {
+    "req": "socket.handshake.headers.x-test-init-header-one",
+    "body": "init-header-value"
+  },
+  "delete /hello": { "body": "deleted!"},
+  "post /hello": { "body": "posted!"},
+  "put /hello": { "body": "putted!"}
+}
