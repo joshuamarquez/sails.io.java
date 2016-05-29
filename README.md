@@ -1,8 +1,6 @@
 # sails.io.java
 
-Java library for communicating w/ [Sails](https://github.com/balderdashy/sails/) via sockets
-
-This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.io.js) in Java.
+This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.io.js) in Java for communicating w/ [Sails](https://github.com/balderdashy/sails/) via sockets
 
 ## Installation
 
