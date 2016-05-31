@@ -9,7 +9,7 @@ This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.
 Add it as a gradle dependency, in build.gradle
 
 ```groovy
-compile ('me.joshuamarquez:sails.io.java:0.1.0')
+compile ('me.joshuamarquez:sails.io.java:0.1.1')
 ```
 
 ## Usage
