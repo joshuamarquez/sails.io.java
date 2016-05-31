@@ -1,10 +1,55 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
+
 group 'me.joshuamarquez'
-version '0.1.0'
+version '0.1.1'
 
-apply plugin: 'java'
+allprojects {
+    repositories {
+        jcenter()
+    }
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'java'
+}
 
-repositories {
-    mavenCentral()
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId rootProject.name
+            version version
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['library']
+    pkg {
+        repo = 'maven'
+        name = rootProject.name
+        userOrg = user
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/joshuamarquez/sails.io.java.git'
+        labels = ['sails', 'socket.io', 'sails.io.js', 'java']
+        publicDownloadNumbers = true
+        githubRepo = 'joshuamarquez/sails.io.java'
+        githubReleaseNotesFile = 'README.md'
+        version {
+            name = '0.1.1'
+            desc = rootProject.name + ' version 0.1.1'
+        }
+    }
 }
 
 dependencies {
@@ -16,4 +61,8 @@ dependencies {
         // excluding org.json which is already provided
         exclude group: 'org.json', module: 'json'
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
 }
