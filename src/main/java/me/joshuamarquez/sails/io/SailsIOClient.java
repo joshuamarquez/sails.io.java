@@ -54,14 +54,6 @@ public class SailsIOClient {
         }
     }
 
-    public static String getSdkVersionKey() {
-        return SDK_VERSION_KEY;
-    }
-
-    public static String getSdkVersionValue() {
-        return SDK_VERSION_VALUE;
-    }
-
     /**
      * Private method used by {@link SailsSocket#request}
      *
