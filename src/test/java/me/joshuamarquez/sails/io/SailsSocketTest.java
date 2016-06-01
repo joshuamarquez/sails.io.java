@@ -48,7 +48,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         // Get global sails socket
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -64,7 +65,7 @@ public class SailsSocketTest extends SailsServer {
     @Test(timeout = TIMEOUT)
     public void isConnectedShouldReturnTrue() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -82,7 +83,7 @@ public class SailsSocketTest extends SailsServer {
     public void shouldReturnStatusCodeNotFound() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.get(TAG, "/invalid_path", null, new SailsSocketResponse.Listener() {
             @Override
             public void onResponse(JWR response) {
@@ -102,7 +103,7 @@ public class SailsSocketTest extends SailsServer {
     public void testGet() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.get(TAG, "/hello", null, buildResponseListener("get /hello", values));
 
         sailsSocket.connect();
@@ -114,7 +115,7 @@ public class SailsSocketTest extends SailsServer {
     public void testDelete() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.delete(TAG, "/hello", null, buildResponseListener("delete /hello", values));
 
         sailsSocket.connect();
@@ -126,7 +127,7 @@ public class SailsSocketTest extends SailsServer {
     public void testPost() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.post(TAG, "/hello", null, buildResponseListener("post /hello", values));
 
         sailsSocket.connect();
@@ -138,7 +139,7 @@ public class SailsSocketTest extends SailsServer {
     public void testPut() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.put(TAG, "/hello", null, buildResponseListener("put /hello", values));
 
         sailsSocket.connect();
@@ -150,7 +151,7 @@ public class SailsSocketTest extends SailsServer {
     public void testGetJSON() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.get(TAG, "/someJSON", null, buildResponseListener("get /someJSON", values));
 
         sailsSocket.connect();
@@ -162,7 +163,7 @@ public class SailsSocketTest extends SailsServer {
     public void testGetError() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.get(TAG, "/someError", null, buildResponseListener("get /someError", values));
 
         sailsSocket.connect();
@@ -174,7 +175,7 @@ public class SailsSocketTest extends SailsServer {
     public void testGetHeaders() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.setHeaders(headers);
 
         sailsSocket.get(TAG, "/headers", null, buildResponseListener("get /headers", values));
@@ -189,7 +190,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsIOClient.getInstance().setHeaders(headers);
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersOverride", null,
                 new HashMap<String, String>() {
@@ -208,7 +210,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsIOClient.getInstance().setHeaders(headers);
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersRemove", null,
                 new HashMap<String, String>() {
@@ -228,7 +231,9 @@ public class SailsSocketTest extends SailsServer {
 
         IO.Options options = new IO.Options();
         options.query = "x-test-query-one={\"foo\":\"bar\"}";
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, options);
+        SailsIOClient.getInstance().setUrl(url);
+        SailsIOClient.getInstance().setOptions(options);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
 
         sailsSocket.get(TAG, "/queryJSON", null, buildResponseListener("get /queryJSON", values));
 
@@ -241,7 +246,8 @@ public class SailsSocketTest extends SailsServer {
     public void testInitialHeaders() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, new IO.Options());
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
         sailsSocket.get(TAG, "/initHeaders", null, buildResponseListener("get /initHeaders", values));
 
         sailsSocket.connect(new HashMap<String, List<String>>() {
@@ -284,8 +290,8 @@ public class SailsSocketTest extends SailsServer {
     public void testTwoSocketsNotSharingSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket1 = new SailsSocket(url, new IO.Options());
-        SailsSocket sailsSocket2 = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket1 = new SailsSocket(url);
+        SailsSocket sailsSocket2 = new SailsSocket(url);
 
         sailsSocket1.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
@@ -314,8 +320,8 @@ public class SailsSocketTest extends SailsServer {
     public void testTwoSocketsSharingSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket1 = new SailsSocket(url, new IO.Options());
-        SailsSocket sailsSocket2 = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket1 = new SailsSocket(url);
+        SailsSocket sailsSocket2 = new SailsSocket(url);
 
         // Make a request to Sails' built-in /__getcookie route
         HttpResponse<String>stringResponse = Unirest.get("http://localhost:1577/__getcookie").asString();
@@ -356,7 +362,7 @@ public class SailsSocketTest extends SailsServer {
     public void testOneSocketNOSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        SailsSocket sailsSocket = new SailsSocket(url);
 
         sailsSocket.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
