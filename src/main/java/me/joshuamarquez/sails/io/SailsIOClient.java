@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SailsIOClient {
 
@@ -16,6 +17,12 @@ public class SailsIOClient {
 
     private static SailsSocket globalSailsSocket;
     private static SailsIOClient instance;
+
+    // Global Socket url
+    private AtomicReference<String> url = new AtomicReference<>();
+
+    // Global Socket options
+    private AtomicReference<IO.Options> options = new AtomicReference<>(new IO.Options());
 
     // Global headers
     private Map<String, String> headers = Collections.emptyMap();
@@ -26,15 +33,17 @@ public class SailsIOClient {
         if (instance == null) {
             instance = new SailsIOClient();
         }
-
         return instance;
     }
 
-    public synchronized SailsSocket socket(String url, IO.Options options) throws URISyntaxException {
+    public synchronized SailsSocket socket() {
         if (globalSailsSocket == null) {
-            globalSailsSocket = new SailsSocket(url, options);
-        }
+            if (url.get() == null) {
+                throw new RuntimeException("Url must be initialized");
+            }
 
+            globalSailsSocket = new SailsSocket(url.get(), options.get());
+        }
         return globalSailsSocket;
     }
 
@@ -52,6 +61,40 @@ public class SailsIOClient {
         if (headers != null && !headers.isEmpty()) {
             this.headers = headers;
         }
+    }
+
+    /**
+     * @return url to connect socket
+     */
+    public String getUrl() {
+        return url.get();
+    }
+
+    /**
+     * @param url to connect socket
+     */
+    public void setUrl(String url) {
+        if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
+            throw new RuntimeException("Can not change url while socket is connected");
+        }
+        this.url.set(url);
+    }
+
+    /**
+     * @return initial socket {@link IO.Options}
+     */
+    public IO.Options getOptions() {
+        return options.get();
+    }
+
+    /**
+     * @param options initial socket {@link IO.Options}
+     */
+    public void setOptions(IO.Options options) {
+        if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
+            throw new RuntimeException("Can not change options while socket is connected");
+        }
+        this.options.set(options);
     }
 
     /**
