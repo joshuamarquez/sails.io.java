@@ -21,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
@@ -97,6 +98,48 @@ public class SailsSocketTest extends SailsServer {
         sailsSocket.connect();
         values.take();
         sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void shouldGetErrorWhenChangingSocketUrl() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                try {
+                    SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
+                } catch (Exception e) {
+                    values.offer("done");
+                }
+            }
+        });
+
+        sailsSocket.connect();
+        values.take();
+        sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void shouldNotGetErrorWhenChangingSocketUrl() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                sailsSocket.disconnect();
+                SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
+                assertThat(SailsIOClient.getInstance().getUrl(), not(url));
+                values.offer("done");
+            }
+        });
+
+        sailsSocket.connect();
+        values.take();
     }
 
     @Test(timeout = TIMEOUT)
