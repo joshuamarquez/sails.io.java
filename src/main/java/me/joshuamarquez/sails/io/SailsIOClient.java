@@ -77,7 +77,8 @@ public class SailsIOClient {
         if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
             throw new RuntimeException("Can not change url while socket is connected");
         }
-        this.url.set(url);
+
+        if (url != null) this.url.set(url);
     }
 
     /**
@@ -94,7 +95,8 @@ public class SailsIOClient {
         if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
             throw new RuntimeException("Can not change options while socket is connected");
         }
-        this.options.set(options);
+
+        if (options != null) this.options.set(options);
     }
 
     /**
