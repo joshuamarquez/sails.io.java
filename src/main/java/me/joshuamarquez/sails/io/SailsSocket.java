@@ -22,7 +22,7 @@ public class SailsSocket {
     private static final Logger logger = Logger.getLogger(SailsSocket.class.getName());
 
     private Socket socket;
-    private IO.Options options;
+    private IO.Options options = new IO.Options();
 
     private boolean isConnecting;
 
@@ -31,11 +31,15 @@ public class SailsSocket {
 
     private Set<SailsSocketRequest> requestQueue;
 
-    public SailsSocket(String url, IO.Options options) throws URISyntaxException {
+    public SailsSocket(String url) {
+        this(url, null);
+    }
+
+    public SailsSocket(String url, IO.Options options) {
         // Set logger level to FINE
         logger.setLevel(Level.FINE);
 
-        this.options = options;
+        if (options != null) this.options = options;
 
         /**
          * Solves problem: "Sails v0.11.x is not compatible with the socket.io/sails.io.js
@@ -51,7 +55,11 @@ public class SailsSocket {
             this.options.query = String.join("&", this.options.query, sdkVersionQuery);
         }
 
-        socket = IO.socket(url, this.options);
+        try {
+            socket = IO.socket(url, this.options);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         requestQueue = new HashSet<SailsSocketRequest>();
 
@@ -61,7 +69,7 @@ public class SailsSocket {
                 drainRequestQueue();
             }
         };
-        socket.once(Socket.EVENT_CONNECT, clearRequestQueue);
+        socket.on(Socket.EVENT_CONNECT, clearRequestQueue);
         socket.on(Socket.EVENT_RECONNECT, clearRequestQueue);
     }
 
@@ -116,6 +124,8 @@ public class SailsSocket {
     private void drainRequestQueue() {
         synchronized (requestQueue) {
             if (!requestQueue.isEmpty()) {
+                logger.fine("Draining request queue");
+
                 for (SailsSocketRequest request : requestQueue) {
                     SailsIOClient.getInstance().emitFrom(socket, request);
                 }
