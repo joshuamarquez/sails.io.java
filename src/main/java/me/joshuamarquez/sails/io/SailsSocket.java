@@ -74,16 +74,16 @@ public class SailsSocket {
     }
 
     /**
-     * Get HTTP headers to be sent in every request for this socket.
+     * Get headers to be sent in every request for this socket.
      */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     /**
-     * Set HTTP headers to be sent in every request for this socket.
+     * Set headers to be sent in every request for this socket.
      *
-     * @param headers
+     * @param headers socket request headers
      */
     public void setHeaders(Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
