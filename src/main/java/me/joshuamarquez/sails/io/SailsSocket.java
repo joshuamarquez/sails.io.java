@@ -84,18 +84,21 @@ public class SailsSocket {
      * Set headers to be sent in every request for this socket.
      *
      * @param headers socket request headers
+     * @return {@link SailsSocket}
      */
-    public void setHeaders(Map<String, String> headers) {
+    public SailsSocket setHeaders(Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             this.headers = headers;
         }
+
+        return this;
     }
 
     /**
      * @param initialHeaders initial headers to be send on connection
-     *
+     * @return {@link SailsSocket}
      */
-    public void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    public SailsSocket setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -115,6 +118,8 @@ public class SailsSocket {
                 });
             }
         });
+
+        return this;
     }
 
     /**
