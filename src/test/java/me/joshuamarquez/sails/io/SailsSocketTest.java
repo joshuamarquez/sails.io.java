@@ -101,6 +101,15 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
+    public void shouldGetErrorWhenNotSettingUrl() throws Exception {
+        try {
+            SailsIOClient.getInstance().socket();
+        } catch(Exception e) {
+            assertThat(e.getMessage(), is("Url must be initialized"));
+        }
+    }
+
+    @Test(timeout = TIMEOUT)
     public void shouldGetErrorWhenChangingSocketUrl() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
@@ -112,6 +121,7 @@ public class SailsSocketTest extends SailsServer {
                 try {
                     SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
                 } catch (Exception e) {
+                    assertThat(e.getMessage(), is("Can not change url while socket is connected"));
                     values.offer("done");
                 }
             }
@@ -119,7 +129,8 @@ public class SailsSocketTest extends SailsServer {
 
         sailsSocket.connect();
         values.take();
-        sailsSocket.disconnect();
+
+        if (sailsSocket.isConnected()) sailsSocket.disconnect();
     }
 
     @Test(timeout = TIMEOUT)
@@ -134,6 +145,51 @@ public class SailsSocketTest extends SailsServer {
                 sailsSocket.disconnect();
                 SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
                 assertThat(SailsIOClient.getInstance().getUrl(), not(url));
+                values.offer("done");
+            }
+        });
+
+        sailsSocket.connect();
+        values.take();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void shouldGetErrorWhenChangingSocketOptions() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                try {
+                    SailsIOClient.getInstance().setOptions(new IO.Options());
+                } catch (Exception e) {
+                    assertThat(e.getMessage(), is("Can not change options while socket is connected"));
+                    values.offer("done");
+                }
+            }
+        });
+
+        sailsSocket.connect();
+        values.take();
+        sailsSocket.disconnect();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void shouldNotGetErrorWhenChangingSocketOptions() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+
+        SailsIOClient.getInstance().setUrl(url);
+        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                sailsSocket.disconnect();
+                IO.Options options = new IO.Options();
+                options.query = "foo=bar";
+                SailsIOClient.getInstance().setOptions(options);
+                assertThat(SailsIOClient.getInstance().getOptions().query, is("foo=bar"));
                 values.offer("done");
             }
         });
