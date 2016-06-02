@@ -37,11 +37,11 @@ public class SailsIOClient {
     }
 
     public synchronized SailsSocket socket() {
-        if (globalSailsSocket == null) {
-            if (url.get() == null) {
-                throw new RuntimeException("Url must be initialized");
-            }
+        if (url.get() == null) {
+            throw new RuntimeException("Url must be initialized");
+        }
 
+        if (globalSailsSocket == null) {
             globalSailsSocket = new SailsSocket(url.get(), options.get());
         }
         return globalSailsSocket;
