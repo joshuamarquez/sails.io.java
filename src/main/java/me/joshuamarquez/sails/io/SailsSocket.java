@@ -95,7 +95,7 @@ public class SailsSocket {
      * @param initialHeaders initial headers to be send on connection
      *
      */
-    private void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    public void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -377,7 +377,7 @@ public class SailsSocket {
     /**
      * Removes all requests in this queue with the given tag.
      */
-    protected void removeRequestsByTag(final String tag) {
+    public void removeRequestsByTag(final String tag) {
         if (tag == null) {
             throw new IllegalArgumentException("tag cannot be null");
         }
@@ -394,7 +394,7 @@ public class SailsSocket {
     /**
      * Removes all pending request in queue.
      */
-    protected void removeAllRequests() {
+    public void removeAllRequests() {
         synchronized (requestQueue) {
             requestQueue.clear();
         }
