@@ -15,7 +15,7 @@ public class SailsIOClient {
     public final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
     public final static String SDK_VERSION_VALUE = "0.13.7";
 
-    private static SailsSocket globalSailsSocket;
+    private SailsSocket sailsSocket;
     private static SailsIOClient instance;
 
     // Global Socket url
@@ -41,10 +41,10 @@ public class SailsIOClient {
             throw new RuntimeException("Url must be initialized");
         }
 
-        if (globalSailsSocket == null) {
-            globalSailsSocket = new SailsSocket(url.get(), options.get());
+        if (sailsSocket == null) {
+            sailsSocket = new SailsSocket(url.get(), options.get());
         }
-        return globalSailsSocket;
+        return sailsSocket;
     }
 
     /**
@@ -74,7 +74,7 @@ public class SailsIOClient {
      * @param url to connect socket
      */
     public void setUrl(String url) {
-        if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
+        if (sailsSocket != null && sailsSocket.isConnected()) {
             throw new RuntimeException("Can not change url while socket is connected");
         }
 
@@ -92,7 +92,7 @@ public class SailsIOClient {
      * @param options initial socket {@link IO.Options}
      */
     public void setOptions(IO.Options options) {
-        if (globalSailsSocket != null && globalSailsSocket.isConnected()) {
+        if (sailsSocket != null && sailsSocket.isConnected()) {
             throw new RuntimeException("Can not change options while socket is connected");
         }
 
