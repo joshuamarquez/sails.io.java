@@ -487,14 +487,15 @@ public class SailsSocketTest extends SailsServer {
         assertNotNull(response.getJsonObjectResponse());
 
         // Ensure body is the correct value
-        Object expectedBody;
-        try {
-            expectedBody = EXPECTED_RESPONSES.getJSONObject(routeAddress).get("body");
-        } catch (JSONException e) {
-            expectedBody = null;
+        Object expectedBody = EXPECTED_RESPONSES.getJSONObject(routeAddress).get("body");
+
+        if (expectedBody.toString().equals("null")) {
+            assertNull(response.getBody());
         }
 
-        assertThat(expectedBody.toString(), is(response.getBody().toString()));
+        else {
+            assertThat(expectedBody.toString(), is(response.getBody().toString()));
+        }
 
         // Ensure JWR statusCode is correct
         int expectedStatusCode;
