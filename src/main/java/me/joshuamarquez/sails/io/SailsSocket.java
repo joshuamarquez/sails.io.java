@@ -202,10 +202,10 @@ public class SailsSocket {
      */
     public SailsSocket reconnect() {
         if (this.isConnecting) {
-            throw new Error("Cannot connect- socket is already connecting");
+            throw new RuntimeException("Cannot connect- socket is already connecting");
         }
         if (isConnected()) {
-            throw new Error("Cannot connect- socket is already connected");
+            throw new RuntimeException("Cannot connect- socket is already connected");
         }
         socket.connect();
 
@@ -221,7 +221,7 @@ public class SailsSocket {
         this.isConnecting = false;
 
         if (!isConnected()) {
-            throw new Error("Cannot disconnect- socket is already disconnected");
+            throw new RuntimeException("Cannot disconnect- socket is already disconnected");
         }
         socket.disconnect();
 
