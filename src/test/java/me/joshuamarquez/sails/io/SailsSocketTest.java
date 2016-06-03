@@ -110,7 +110,7 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
-    public void shouldGetErrorWhenChangingSocketUrl() throws Exception {
+    public void shouldGetErrorWhenSettingSocketUrl() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsIOClient.getInstance().setUrl(url);
@@ -129,32 +129,17 @@ public class SailsSocketTest extends SailsServer {
 
         sailsSocket.connect();
         values.take();
-
-        if (sailsSocket.isConnected()) sailsSocket.disconnect();
+        sailsSocket.disconnect();
     }
 
     @Test(timeout = TIMEOUT)
-    public void shouldNotGetErrorWhenChangingSocketUrl() throws Exception {
-        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
-
-        SailsIOClient.getInstance().setUrl(url);
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
-        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                sailsSocket.disconnect();
-                SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
-                assertThat(SailsIOClient.getInstance().getUrl(), not(url));
-                values.offer("done");
-            }
-        });
-
-        sailsSocket.connect();
-        values.take();
+    public void shouldNotGetErrorWhenSettingSocketUrl() throws Exception {
+        SailsIOClient.getInstance().setUrl("http://127.0.0.1:" + PORT);
+        assertThat(SailsIOClient.getInstance().getUrl(), not(url));
     }
 
     @Test(timeout = TIMEOUT)
-    public void shouldGetErrorWhenChangingSocketOptions() throws Exception {
+    public void shouldGetErrorWhenSettingSocketOptions() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsIOClient.getInstance().setUrl(url);
@@ -177,25 +162,14 @@ public class SailsSocketTest extends SailsServer {
     }
 
     @Test(timeout = TIMEOUT)
-    public void shouldNotGetErrorWhenChangingSocketOptions() throws Exception {
-        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
-
-        SailsIOClient.getInstance().setUrl(url);
-        SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
-        sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                sailsSocket.disconnect();
-                IO.Options options = new IO.Options();
-                options.query = "foo=bar";
-                SailsIOClient.getInstance().setOptions(options);
-                assertThat(SailsIOClient.getInstance().getOptions().query, is("foo=bar"));
-                values.offer("done");
+    public void shouldNotGetErrorWhenSettingSocketOptions() throws Exception {
+        IO.Options options = new IO.Options(){
+            {
+                query = "foo=bar";
             }
-        });
-
-        sailsSocket.connect();
-        values.take();
+        };
+        SailsIOClient.getInstance().setOptions(options);
+        assertThat(SailsIOClient.getInstance().getOptions().query, is("foo=bar"));
     }
 
     @Test(timeout = TIMEOUT)
