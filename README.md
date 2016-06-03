@@ -15,7 +15,7 @@ compile 'me.joshuamarquez:sails.io.java:0.2.0'
 ### Maven
 
 ```xml
-dependency>
+<dependency>
   <groupId>me.joshuamarquez</groupId>
   <artifactId>sails.io.java</artifactId>
   <version>0.2.0</version>
@@ -28,11 +28,13 @@ dependency>
 #### Use global socket instance
 
 ```java
-SailsIOClient.getInstance().setUrl("http://localhost:1337");
 // Get global socket
+SailsIOClient.getInstance().setUrl("http://localhost:1337");
 SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+
 // Connect global socket
 sailsSocket.connect();
+
 // Make GET request
 sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
     @Override
@@ -53,6 +55,14 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
 ```java
 SailsSocket sailsSocket = new SailsSocket(url, opts);
 sailsSocket.connect();
+```
+
+#### Set Global Socket Options
+
+Set query options for global socket initial connection.
+
+```java
+SailsIOClient.getInstance().setOptions(new IO.Options(){ { query = "token=yQ29sFHAqw4.."; } });
 ```
 
 ## Properties
