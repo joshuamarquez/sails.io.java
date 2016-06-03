@@ -259,3 +259,12 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
     }
 });
 ```
+
+## TODO
+
+* Overload socket RESTful methods to make `params` optional.
+* Make tests for socket request queue.
+
+## License
+
+MIT
