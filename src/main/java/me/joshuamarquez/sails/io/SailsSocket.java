@@ -22,7 +22,7 @@ public class SailsSocket {
     private static final Logger logger = Logger.getLogger(SailsSocket.class.getName());
 
     private Socket socket;
-    private IO.Options options;
+    private IO.Options options = new IO.Options();
 
     private boolean isConnecting;
 
@@ -31,11 +31,15 @@ public class SailsSocket {
 
     private Set<SailsSocketRequest> requestQueue;
 
-    public SailsSocket(String url, IO.Options options) throws URISyntaxException {
+    public SailsSocket(String url) {
+        this(url, null);
+    }
+
+    public SailsSocket(String url, IO.Options options) {
         // Set logger level to FINE
         logger.setLevel(Level.FINE);
 
-        this.options = options;
+        if (options != null) this.options = options;
 
         /**
          * Solves problem: "Sails v0.11.x is not compatible with the socket.io/sails.io.js
@@ -51,7 +55,11 @@ public class SailsSocket {
             this.options.query = String.join("&", this.options.query, sdkVersionQuery);
         }
 
-        socket = IO.socket(url, this.options);
+        try {
+            socket = IO.socket(url, this.options);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         requestQueue = new HashSet<SailsSocketRequest>();
 
@@ -61,33 +69,36 @@ public class SailsSocket {
                 drainRequestQueue();
             }
         };
-        socket.once(Socket.EVENT_CONNECT, clearRequestQueue);
+        socket.on(Socket.EVENT_CONNECT, clearRequestQueue);
         socket.on(Socket.EVENT_RECONNECT, clearRequestQueue);
     }
 
     /**
-     * Get HTTP headers to be sent in every request for this socket.
+     * Get headers to be sent in every request for this socket.
      */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     /**
-     * Set HTTP headers to be sent in every request for this socket.
+     * Set headers to be sent in every request for this socket.
      *
-     * @param headers
+     * @param headers socket request headers
+     * @return {@link SailsSocket}
      */
-    public void setHeaders(Map<String, String> headers) {
+    public SailsSocket setHeaders(Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             this.headers = headers;
         }
+
+        return this;
     }
 
     /**
      * @param initialHeaders initial headers to be send on connection
-     *
+     * @return {@link SailsSocket}
      */
-    private void setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    public SailsSocket setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -107,6 +118,8 @@ public class SailsSocket {
                 });
             }
         });
+
+        return this;
     }
 
     /**
@@ -116,6 +129,8 @@ public class SailsSocket {
     private void drainRequestQueue() {
         synchronized (requestQueue) {
             if (!requestQueue.isEmpty()) {
+                logger.fine("Draining request queue");
+
                 for (SailsSocketRequest request : requestQueue) {
                     SailsIOClient.getInstance().emitFrom(socket, request);
                 }
@@ -187,10 +202,10 @@ public class SailsSocket {
      */
     public SailsSocket reconnect() {
         if (this.isConnecting) {
-            throw new Error("Cannot connect- socket is already connecting");
+            throw new RuntimeException("Cannot connect- socket is already connecting");
         }
         if (isConnected()) {
-            throw new Error("Cannot connect- socket is already connected");
+            throw new RuntimeException("Cannot connect- socket is already connected");
         }
         socket.connect();
 
@@ -206,7 +221,7 @@ public class SailsSocket {
         this.isConnecting = false;
 
         if (!isConnected()) {
-            throw new Error("Cannot disconnect- socket is already disconnected");
+            throw new RuntimeException("Cannot disconnect- socket is already disconnected");
         }
         socket.disconnect();
 
@@ -367,7 +382,7 @@ public class SailsSocket {
     /**
      * Removes all requests in this queue with the given tag.
      */
-    protected void removeRequestsByTag(final String tag) {
+    public void removeRequestsByTag(final String tag) {
         if (tag == null) {
             throw new IllegalArgumentException("tag cannot be null");
         }
@@ -384,7 +399,7 @@ public class SailsSocket {
     /**
      * Removes all pending request in queue.
      */
-    protected void removeAllRequests() {
+    public void removeAllRequests() {
         synchronized (requestQueue) {
             requestQueue.clear();
         }

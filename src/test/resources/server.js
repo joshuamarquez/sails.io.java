@@ -63,7 +63,7 @@ module.exports = {
 function setupRoutes(expectedResponses) {
     _.each(expectedResponses, function (expectedResponse, routeAddress) {
         server.router.bind(routeAddress, function (req, res) {
-            return res.send(expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
+            return res.send(expectedResponse.statusCode || 200, expectedResponse.req ? _dotToObject(req, expectedResponse.req) : expectedResponse.body);
         });
     });
 }

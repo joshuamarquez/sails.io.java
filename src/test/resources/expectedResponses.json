@@ -17,7 +17,7 @@
   },
   "get /headersRemove": {
     "req": "headers.x-test-header-one",
-    "body": "headerRemoved"
+    "body": null
   },
   "get /emptyBody": {
     "body": null
