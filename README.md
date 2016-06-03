@@ -9,7 +9,18 @@ This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.
 Add it as a gradle dependency, in build.gradle
 
 ```groovy
-compile ('me.joshuamarquez:sails.io.java:0.1.1')
+compile 'me.joshuamarquez:sails.io.java:0.2.0'
+```
+
+### Maven
+
+```xml
+dependency>
+  <groupId>me.joshuamarquez</groupId>
+  <artifactId>sails.io.java</artifactId>
+  <version>0.2.0</version>
+  <type>pom</type>
+</dependency>
 ```
 
 ## Usage
@@ -17,10 +28,9 @@ compile ('me.joshuamarquez:sails.io.java:0.1.1')
 #### Use global socket instance
 
 ```java
-String url = "http://localhost:1337";
-IO.Options opts = new IO.Options();
+SailsIOClient.getInstance().setUrl("http://localhost:1337");
 // Get global socket
-SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, opts);
+SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
 // Connect global socket
 sailsSocket.connect();
 // Make GET request
