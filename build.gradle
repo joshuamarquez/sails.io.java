@@ -9,7 +9,10 @@ plugins {
 }
 
 group 'me.joshuamarquez'
-version '0.2.0'
+version 'ts-compatibility'
+
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
 
 allprojects {
     repositories {
@@ -46,8 +49,8 @@ bintray {
         githubRepo = 'joshuamarquez/sails.io.java'
         githubReleaseNotesFile = 'README.md'
         version {
-            name = '0.2.0'
-            desc = rootProject.name + ' version 0.2.0'
+            name = 'ts-compatibility'
+            desc = rootProject.name + ' version ts-compatibility'
         }
     }
 }
