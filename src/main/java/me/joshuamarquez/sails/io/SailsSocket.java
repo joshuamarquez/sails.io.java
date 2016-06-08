@@ -48,11 +48,11 @@ public class SailsSocket {
          *
          * https://github.com/balderdashy/sails/issues/2640
          */
-        String sdkVersionQuery = String.join("=", SDK_VERSION_KEY, SDK_VERSION_VALUE);
+        String sdkVersionQuery = SDK_VERSION_KEY + "=" + SDK_VERSION_VALUE;
         if (this.options.query == null) {
             this.options.query = sdkVersionQuery;
         } else {
-            this.options.query = String.join("&", this.options.query, sdkVersionQuery);
+            this.options.query = this.options.query + "&" + sdkVersionQuery;
         }
 
         try {
