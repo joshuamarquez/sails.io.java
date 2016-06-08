@@ -66,7 +66,7 @@ public class SailsSocketTest extends SailsServer {
     @Test(timeout = TIMEOUT)
     public void isConnectedShouldReturnTrue() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
-        SailsSocket sailsSocket = new SailsSocket(url);
+        final SailsSocket sailsSocket = new SailsSocket(url);
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -336,7 +336,7 @@ public class SailsSocketTest extends SailsServer {
     public void testOneSocketSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
+        final SailsSocket sailsSocket = new SailsSocket(url, new IO.Options());
 
         sailsSocket.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
@@ -364,7 +364,7 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsSocket sailsSocket1 = new SailsSocket(url);
-        SailsSocket sailsSocket2 = new SailsSocket(url);
+        final SailsSocket sailsSocket2 = new SailsSocket(url);
 
         sailsSocket1.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
@@ -394,15 +394,15 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsSocket sailsSocket1 = new SailsSocket(url);
-        SailsSocket sailsSocket2 = new SailsSocket(url);
+        final SailsSocket sailsSocket2 = new SailsSocket(url);
 
         // Make a request to Sails' built-in /__getcookie route
         HttpResponse<String>stringResponse = Unirest.get("http://localhost:1577/__getcookie").asString();
         String setCookieHeader = stringResponse.getHeaders().get("set-cookie").toString();
         // Get the cookie data from the set-cookie header
-        String cookie = setCookieHeader.substring(setCookieHeader.indexOf("[") + 1, setCookieHeader.indexOf(";"));
+        final String cookie = setCookieHeader.substring(setCookieHeader.indexOf("[") + 1, setCookieHeader.indexOf(";"));
 
-        Map<String, List<String>> initialHeaders = new HashMap<String, List<String>>() {
+        final Map<String, List<String>> initialHeaders = new HashMap<String, List<String>>() {
             {
                 put("cookie", Arrays.asList(cookie));
             }
@@ -435,7 +435,7 @@ public class SailsSocketTest extends SailsServer {
     public void testOneSocketNOSession() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        SailsSocket sailsSocket = new SailsSocket(url);
+        final SailsSocket sailsSocket = new SailsSocket(url);
 
         sailsSocket.get(TAG, "/count", null, new SailsSocketResponse.Listener() {
             @Override
@@ -470,8 +470,8 @@ public class SailsSocketTest extends SailsServer {
      * @return {@link SailsSocketResponse.Listener}
      * @throws Exception
      */
-    private SailsSocketResponse.Listener buildResponseListener(String routeAddress,
-                                                               BlockingQueue<Object> values) throws Exception {
+    private SailsSocketResponse.Listener buildResponseListener(final String routeAddress,
+                                                               final BlockingQueue<Object> values) throws Exception {
         return new SailsSocketResponse.Listener() {
             @Override
             public void onResponse(JWR response) {

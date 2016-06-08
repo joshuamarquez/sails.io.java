@@ -98,7 +98,7 @@ public class SailsSocket {
      * @param initialHeaders initial headers to be send on connection
      * @return {@link SailsSocket}
      */
-    public SailsSocket setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    public SailsSocket setInitialConnectionHeaders(final Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override

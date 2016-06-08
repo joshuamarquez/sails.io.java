@@ -110,7 +110,7 @@ public class SailsIOClient {
         String sailsEndpoint = request.getMethod();
 
         // Since Listener is embedded in request, retrieve it.
-        SailsSocketResponse.Listener listener = request.getListener();
+        final SailsSocketResponse.Listener listener = request.getListener();
 
         socket.emit(sailsEndpoint, request.toJSONObject(), new Ack() {
             @Override
