@@ -48,11 +48,11 @@ public class SailsSocket {
          *
          * https://github.com/balderdashy/sails/issues/2640
          */
-        String sdkVersionQuery = String.join("=", SDK_VERSION_KEY, SDK_VERSION_VALUE);
+        String sdkVersionQuery = SDK_VERSION_KEY + "=" + SDK_VERSION_VALUE;
         if (this.options.query == null) {
             this.options.query = sdkVersionQuery;
         } else {
-            this.options.query = String.join("&", this.options.query, sdkVersionQuery);
+            this.options.query = this.options.query + "&" + sdkVersionQuery;
         }
 
         try {
@@ -98,7 +98,7 @@ public class SailsSocket {
      * @param initialHeaders initial headers to be send on connection
      * @return {@link SailsSocket}
      */
-    public SailsSocket setInitialConnectionHeaders(Map<String, List<String>> initialHeaders) {
+    public SailsSocket setInitialConnectionHeaders(final Map<String, List<String>> initialHeaders) {
         // Called upon transport creation.
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override

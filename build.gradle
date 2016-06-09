@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'me.joshuamarquez'
-version '0.2.0'
+version '0.2.2'
 
 allprojects {
     repositories {
@@ -19,6 +19,8 @@ allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'java'
 }
+
+sourceCompatibility = 1.7
 
 publishing {
     publications {
@@ -46,8 +48,8 @@ bintray {
         githubRepo = 'joshuamarquez/sails.io.java'
         githubReleaseNotesFile = 'README.md'
         version {
-            name = '0.2.0'
-            desc = rootProject.name + ' version 0.2.0'
+            name = '0.2.2'
+            desc = rootProject.name + ' version 0.2.2'
         }
     }
 }

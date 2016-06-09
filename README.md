@@ -6,19 +6,21 @@ This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.
 
 ### Gradle
 
-Add it as a gradle dependency, in build.gradle
+Add it as a gradle dependency, in `build.gradle`.
 
 ```groovy
-compile 'me.joshuamarquez:sails.io.java:0.2.0'
+compile 'me.joshuamarquez:sails.io.java:0.2.2'
 ```
 
 ### Maven
+
+Add the following dependency to your `pom.xml`.
 
 ```xml
 <dependency>
   <groupId>me.joshuamarquez</groupId>
   <artifactId>sails.io.java</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -53,7 +55,7 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
 #### Create new socket instance
 
 ```java
-SailsSocket sailsSocket = new SailsSocket(url, opts);
+SailsSocket sailsSocket = new SailsSocket(url);
 sailsSocket.connect();
 ```
 
@@ -103,7 +105,7 @@ sailsSocket.setHeaders(headers);
 
 #### Setting request headers
 
-You can set or override global headers nd socket headers by request.
+You can set or override global headers and socket headers by request.
 
 ```java
 Map<String> headers = new HashMap<String, String>();
@@ -149,7 +151,7 @@ In server code, this can be accessed via `req.socket.handshake.query` in control
 IO.Options options = new IO.Options();
 options.query = "x-query={\"foo\":\"bar\"}";
 
-SailsSocket sailsSocket = SailsIOClient.getInstance().socket(url, options);
+SailsSocket sailsSocket = new SailsSocket(url, options);
 sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
     @Override
     public void onResponse(JWR response) { }
@@ -264,6 +266,8 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
 
 * Overload socket RESTful methods to make `params` optional.
 * Make tests for socket request queue.
+* Gson support in JWR body
+* Make `URL` and `Options` behave like headers (Global, Socket).
 
 ## License
 
