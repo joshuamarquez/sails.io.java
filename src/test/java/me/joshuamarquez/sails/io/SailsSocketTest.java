@@ -201,7 +201,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsSocket sailsSocket = new SailsSocket(url);
-        sailsSocket.post(TAG, "/hello", null, buildResponseListener("post /hello", values));
+        JSONObject params = new JSONObject() { { put("foo", "posted!"); } };
+        sailsSocket.post(TAG, "/hello", params, buildResponseListener("post /hello", values));
 
         sailsSocket.connect();
         values.take();
@@ -213,7 +214,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         SailsSocket sailsSocket = new SailsSocket(url);
-        sailsSocket.put(TAG, "/hello", null, buildResponseListener("put /hello", values));
+        JSONObject params = new JSONObject() { { put("foo", "putted!"); } };
+        sailsSocket.put(TAG, "/hello", params, buildResponseListener("put /hello", values));
 
         sailsSocket.connect();
         values.take();

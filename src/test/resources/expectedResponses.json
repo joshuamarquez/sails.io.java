@@ -31,6 +31,12 @@
     "body": "init-header-value"
   },
   "delete /hello": { "body": "deleted!"},
-  "post /hello": { "body": "posted!"},
-  "put /hello": { "body": "putted!"}
+  "post /hello": {
+    "req": "body.foo",
+    "body": "posted!"
+  },
+  "put /hello": {
+    "req": "body.foo",
+    "body": "putted!"
+  }
 }
