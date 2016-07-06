@@ -267,7 +267,10 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
 * Overload socket RESTful methods to make `params` optional.
 * Make tests for socket request queue.
 * Gson support in JWR body
-* Make `URL` and `Options` behave like headers (Global, Socket).
+* Make `URL` and `Options` behave like `initialConnectionHeaders` (Global, Socket).
+* Make `query` option from `Options` available like `initialConnectionHeaders` is.
+* Improve design to make the usage of sockets easier.
+* Create Listener for Events with Generics and Gson support.
 
 ## License
 
