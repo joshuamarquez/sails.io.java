@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'me.joshuamarquez'
-version '0.2.2'
+version '0.3.0'
 
 allprojects {
     repositories {
@@ -48,8 +48,8 @@ bintray {
         githubRepo = 'joshuamarquez/sails.io.java'
         githubReleaseNotesFile = 'README.md'
         version {
-            name = '0.2.2'
-            desc = rootProject.name + ' version 0.2.2'
+            name = '0.3.0'
+            desc = rootProject.name + ' version 0.3.0'
         }
     }
 }
