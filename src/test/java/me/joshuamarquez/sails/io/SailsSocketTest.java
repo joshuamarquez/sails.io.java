@@ -280,6 +280,18 @@ public class SailsSocketTest extends SailsServer {
         sailsSocket.disconnect();
     }
 
+    @Test
+    public void connectNextUrl() throws Exception {
+        SailsIOClient.getInstance().resetNextConnection();
+        SailsIOClient.getInstance().setUrl("http://localhost:7331");
+        SailsIOClient.getInstance().socket().connect();
+
+        Thread.sleep(5000);
+        assertThat(SailsIOClient.getInstance().socket().isConnected(), is(false));
+
+        SailsIOClient.getInstance().resetNextConnection();
+    }
+
     @Test(timeout = TIMEOUT)
     public void testGetHeadersRemove()throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
