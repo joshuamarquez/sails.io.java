@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SailsIOClient {
@@ -20,6 +21,8 @@ public class SailsIOClient {
 
     // Global Socket url
     private AtomicReference<String> url = new AtomicReference<>();
+
+    private AtomicBoolean shouldResetNextConnection = new AtomicBoolean();
 
     // Global Socket options
     private AtomicReference<IO.Options> options = new AtomicReference<>(new IO.Options());
@@ -41,13 +44,28 @@ public class SailsIOClient {
             throw new RuntimeException("Url must be initialized");
         }
 
-        if (sailsSocket == null) {
-            sailsSocket = new SailsSocket(url.get(), options.get());
+        IO.Options nOptions = options.get();
+
+        if (nOptions == null) {
+            nOptions = new IO.Options();
         }
+
+        boolean resetConnection = false;
+
+        if (shouldResetNextConnection.get() && sailsSocket != null && !sailsSocket.isConnected()) {
+            nOptions.forceNew = true;
+            resetConnection = true;
+        }
+
+        if (sailsSocket == null || resetConnection) {
+            sailsSocket = new SailsSocket(url.get(), options.get());
+            shouldResetNextConnection.set(false);
+        }
+
         return sailsSocket;
     }
 
-    /**
+    /*
      * Get HTTP headers to be sent in every request for all sockets.
      */
     public Map<String, String> getHeaders() {
@@ -79,6 +97,10 @@ public class SailsIOClient {
         }
 
         if (url != null) this.url.set(url);
+    }
+
+    public void resetNextConnection() {
+        shouldResetNextConnection.set(true);
     }
 
     /**
