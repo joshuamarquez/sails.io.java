@@ -16,14 +16,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static me.joshuamarquez.sails.io.SailsSocketRequest.*;
-import static me.joshuamarquez.sails.io.SailsIOClient.*;
 
 public class SailsSocket {
+
+    public final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
+    public final static String SDK_VERSION_VALUE = "0.13.7";
+
+    private static SailsIOClient sailsIOClient;
 
     private static final Logger logger = Logger.getLogger(SailsSocket.class.getName());
 
     private Socket socket;
-    private IO.Options options = new IO.Options();
 
     private boolean isConnecting;
 
@@ -40,7 +43,9 @@ public class SailsSocket {
         // Set logger level to FINE
         logger.setLevel(Level.FINE);
 
-        if (options != null) this.options = options;
+        if (options == null) {
+            options = new IO.Options();
+        }
 
         /**
          * Solves problem: "Sails v0.11.x is not compatible with the socket.io/sails.io.js
@@ -50,14 +55,14 @@ public class SailsSocket {
          * https://github.com/balderdashy/sails/issues/2640
          */
         String sdkVersionQuery = SDK_VERSION_KEY + "=" + SDK_VERSION_VALUE;
-        if (this.options.query == null) {
-            this.options.query = sdkVersionQuery;
+        if (options.query == null) {
+            options.query = sdkVersionQuery;
         } else {
-            this.options.query = this.options.query + "&" + sdkVersionQuery;
+            options.query = options.query + "&" + sdkVersionQuery;
         }
 
         try {
-            socket = IO.socket(url, this.options);
+            socket = IO.socket(url, options);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -72,6 +77,19 @@ public class SailsSocket {
         };
         socket.on(Socket.EVENT_CONNECT, clearRequestQueue);
         socket.on(Socket.EVENT_RECONNECT, clearRequestQueue);
+    }
+
+    /**
+     *
+     *
+     * @param sailsIOClient
+     */
+    public static void registerSailsIOClient (SailsIOClient sailsIOClient) {
+        if (SailsSocket.sailsIOClient != null) {
+            throw new RuntimeException("sailsIOClient is already registered!");
+        }
+
+        SailsSocket.sailsIOClient = sailsIOClient;
     }
 
     /**
@@ -353,7 +371,9 @@ public class SailsSocket {
          */
 
         // Merge Global headers
-        requestHeaders.putAll(SailsIOClient.getInstance().getHeaders());
+        if (sailsIOClient != null) {
+            requestHeaders.putAll(sailsIOClient.getHeaders());
+        }
 
         // Merge Socket headers
         requestHeaders.putAll(this.headers);
