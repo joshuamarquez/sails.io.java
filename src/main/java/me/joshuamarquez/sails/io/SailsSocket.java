@@ -1,5 +1,6 @@
 package me.joshuamarquez.sails.io;
 
+import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
@@ -124,7 +125,7 @@ public class SailsSocket {
 
     /**
      * Drains request queue sending each
-     * request to {@link SailsIOClient#emitFrom(Socket, SailsSocketRequest)}
+     * request to {@link this.emitFrom(Socket, SailsSocketRequest)}
      */
     private void drainRequestQueue() {
         synchronized (requestQueue) {
@@ -132,7 +133,7 @@ public class SailsSocket {
                 logger.fine("Draining request queue");
 
                 for (SailsSocketRequest request : requestQueue) {
-                    SailsIOClient.getInstance().emitFrom(socket, request);
+                    emitFrom(socket, request);
                 }
 
                 requestQueue.clear();
@@ -373,7 +374,7 @@ public class SailsSocket {
                 requestQueue.add(request);
             }
         } else {
-            SailsIOClient.getInstance().emitFrom(socket, request);
+            emitFrom(socket, request);
         }
 
         return this;
@@ -403,6 +404,30 @@ public class SailsSocket {
         synchronized (requestQueue) {
             requestQueue.clear();
         }
+    }
+
+    /**
+     * Private method used by {@link SailsSocket#request}
+     *
+     * @param request {@link SailsSocketRequest}
+     */
+    private void emitFrom(Socket socket, SailsSocketRequest request) {
+        // Name of the appropriate socket.io listener on the server
+        // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
+        String sailsEndpoint = request.getMethod();
+
+        // Since Listener is embedded in request, retrieve it.
+        final SailsSocketResponse.Listener listener = request.getListener();
+
+        socket.emit(sailsEndpoint, request.toJSONObject(), new Ack() {
+            @Override
+            public void call(Object... args) {
+                // Send back jsonWebSocketResponse
+                if (listener != null) {
+                    listener.onResponse(new JWR((JSONObject) args[0]));
+                }
+            }
+        });
     }
 
 }
