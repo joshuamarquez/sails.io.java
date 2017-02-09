@@ -19,9 +19,6 @@ public class SailsIOClient {
     // Global Socket options
     private AtomicReference<IO.Options> options = new AtomicReference<>(new IO.Options());
 
-    // Global headers
-    private Map<String, String> headers = Collections.emptyMap();
-
     public SailsIOClient() { /* No args constructor */ }
 
     public SailsSocket socket() {
@@ -44,7 +41,6 @@ public class SailsIOClient {
 
         if (sailsSocket == null || resetConnection) {
             sailsSocket = new SailsSocket(url.get(), options.get());
-            SailsSocket.registerSailsIOClient(this);
             shouldResetNextConnection.set(false);
         }
 
@@ -55,15 +51,19 @@ public class SailsIOClient {
      * Get HTTP headers to be sent in every request for all sockets.
      */
     public Map<String, String> getHeaders() {
-        return headers;
+        if (sailsSocket != null) {
+            return sailsSocket.getHeaders();
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
      * @param headers HTTP headers to be sent in every request for all sockets.
      */
     public void setHeaders(Map<String, String> headers) {
-        if (headers != null && !headers.isEmpty()) {
-            this.headers = headers;
+        if (sailsSocket != null) {
+            sailsSocket.setHeaders(headers);
         }
     }
 

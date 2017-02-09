@@ -22,8 +22,6 @@ public class SailsSocket {
     public final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
     public final static String SDK_VERSION_VALUE = "0.13.7";
 
-    private static SailsIOClient sailsIOClient;
-
     private static final Logger logger = Logger.getLogger(SailsSocket.class.getName());
 
     private Socket socket;
@@ -77,19 +75,6 @@ public class SailsSocket {
         };
         socket.on(Socket.EVENT_CONNECT, clearRequestQueue);
         socket.on(Socket.EVENT_RECONNECT, clearRequestQueue);
-    }
-
-    /**
-     *
-     *
-     * @param sailsIOClient
-     */
-    public static void registerSailsIOClient (SailsIOClient sailsIOClient) {
-        if (SailsSocket.sailsIOClient != null) {
-            throw new RuntimeException("sailsIOClient is already registered!");
-        }
-
-        SailsSocket.sailsIOClient = sailsIOClient;
     }
 
     /**
@@ -364,16 +349,8 @@ public class SailsSocket {
      */
     public SailsSocket request(String tag, String method, String url, JSONObject params, Map<String, String> headers,
                                SailsSocketResponse.Listener listener) {
+
         Map<String, String> requestHeaders = new HashMap<String, String>();
-
-        /**
-         * Merge Globals, Socket headers and Request Headers into requestHeaders
-         */
-
-        // Merge Global headers
-        if (sailsIOClient != null) {
-            requestHeaders.putAll(sailsIOClient.getHeaders());
-        }
 
         // Merge Socket headers
         requestHeaders.putAll(this.headers);
