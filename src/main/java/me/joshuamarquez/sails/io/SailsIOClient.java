@@ -1,11 +1,7 @@
 package me.joshuamarquez.sails.io;
 
-import io.socket.client.Ack;
 import io.socket.client.IO;
-import io.socket.client.Socket;
-import org.json.JSONObject;
 
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,11 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SailsIOClient {
 
-    public final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
-    public final static String SDK_VERSION_VALUE = "0.13.7";
-
     private SailsSocket sailsSocket;
-    private static SailsIOClient instance;
 
     // Global Socket url
     private AtomicReference<String> url = new AtomicReference<>();
@@ -30,14 +22,7 @@ public class SailsIOClient {
     // Global headers
     private Map<String, String> headers = Collections.emptyMap();
 
-    private SailsIOClient() { /* No args constructor */ }
-
-    public synchronized static SailsIOClient getInstance() {
-        if (instance == null) {
-            instance = new SailsIOClient();
-        }
-        return instance;
-    }
+    public SailsIOClient() { /* No args constructor */ }
 
     public SailsSocket socket() {
         if (url.get() == null) {
@@ -59,6 +44,7 @@ public class SailsIOClient {
 
         if (sailsSocket == null || resetConnection) {
             sailsSocket = new SailsSocket(url.get(), options.get());
+            SailsSocket.registerSailsIOClient(this);
             shouldResetNextConnection.set(false);
         }
 
@@ -121,27 +107,4 @@ public class SailsIOClient {
         if (options != null) this.options.set(options);
     }
 
-    /**
-     * Private method used by {@link SailsSocket#request}
-     *
-     * @param request {@link SailsSocketRequest}
-     */
-    void emitFrom(Socket socket, SailsSocketRequest request) {
-        // Name of the appropriate socket.io listener on the server
-        // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
-        String sailsEndpoint = request.getMethod();
-
-        // Since Listener is embedded in request, retrieve it.
-        final SailsSocketResponse.Listener listener = request.getListener();
-
-        socket.emit(sailsEndpoint, request.toJSONObject(), new Ack() {
-            @Override
-            public void call(Object... args) {
-                // Send back jsonWebSocketResponse
-                if (listener != null) {
-                    listener.onResponse(new JWR((JSONObject) args[0]));
-                }
-            }
-        });
-    }
 }
