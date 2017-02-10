@@ -1,5 +1,6 @@
 package me.joshuamarquez.sails.io;
 
+import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
@@ -15,14 +16,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static me.joshuamarquez.sails.io.SailsSocketRequest.*;
-import static me.joshuamarquez.sails.io.SailsIOClient.*;
 
 public class SailsSocket {
+
+    public final static String SDK_VERSION_KEY = "__sails_io_sdk_version";
+    public final static String SDK_VERSION_VALUE = "0.13.7";
 
     private static final Logger logger = Logger.getLogger(SailsSocket.class.getName());
 
     private Socket socket;
-    private IO.Options options = new IO.Options();
 
     private boolean isConnecting;
 
@@ -39,7 +41,9 @@ public class SailsSocket {
         // Set logger level to FINE
         logger.setLevel(Level.FINE);
 
-        if (options != null) this.options = options;
+        if (options == null) {
+            options = new IO.Options();
+        }
 
         /**
          * Solves problem: "Sails v0.11.x is not compatible with the socket.io/sails.io.js
@@ -49,14 +53,14 @@ public class SailsSocket {
          * https://github.com/balderdashy/sails/issues/2640
          */
         String sdkVersionQuery = SDK_VERSION_KEY + "=" + SDK_VERSION_VALUE;
-        if (this.options.query == null) {
-            this.options.query = sdkVersionQuery;
+        if (options.query == null) {
+            options.query = sdkVersionQuery;
         } else {
-            this.options.query = this.options.query + "&" + sdkVersionQuery;
+            options.query = options.query + "&" + sdkVersionQuery;
         }
 
         try {
-            socket = IO.socket(url, this.options);
+            socket = IO.socket(url, options);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -124,7 +128,7 @@ public class SailsSocket {
 
     /**
      * Drains request queue sending each
-     * request to {@link SailsIOClient#emitFrom(Socket, SailsSocketRequest)}
+     * request to {@link this.emitFrom(Socket, SailsSocketRequest)}
      */
     private void drainRequestQueue() {
         synchronized (requestQueue) {
@@ -132,7 +136,7 @@ public class SailsSocket {
                 logger.fine("Draining request queue");
 
                 for (SailsSocketRequest request : requestQueue) {
-                    SailsIOClient.getInstance().emitFrom(socket, request);
+                    emitFrom(socket, request);
                 }
 
                 requestQueue.clear();
@@ -345,14 +349,8 @@ public class SailsSocket {
      */
     public SailsSocket request(String tag, String method, String url, JSONObject params, Map<String, String> headers,
                                SailsSocketResponse.Listener listener) {
+
         Map<String, String> requestHeaders = new HashMap<String, String>();
-
-        /**
-         * Merge Globals, Socket headers and Request Headers into requestHeaders
-         */
-
-        // Merge Global headers
-        requestHeaders.putAll(SailsIOClient.getInstance().getHeaders());
 
         // Merge Socket headers
         requestHeaders.putAll(this.headers);
@@ -373,7 +371,7 @@ public class SailsSocket {
                 requestQueue.add(request);
             }
         } else {
-            SailsIOClient.getInstance().emitFrom(socket, request);
+            emitFrom(socket, request);
         }
 
         return this;
@@ -403,6 +401,30 @@ public class SailsSocket {
         synchronized (requestQueue) {
             requestQueue.clear();
         }
+    }
+
+    /**
+     * Private method used by {@link SailsSocket#request}
+     *
+     * @param request {@link SailsSocketRequest}
+     */
+    private void emitFrom(Socket socket, SailsSocketRequest request) {
+        // Name of the appropriate socket.io listener on the server
+        // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
+        String sailsEndpoint = request.getMethod();
+
+        // Since Listener is embedded in request, retrieve it.
+        final SailsSocketResponse.Listener listener = request.getListener();
+
+        socket.emit(sailsEndpoint, request.toJSONObject(), new Ack() {
+            @Override
+            public void call(Object... args) {
+                // Send back jsonWebSocketResponse
+                if (listener != null) {
+                    listener.onResponse(new JWR((JSONObject) args[0]));
+                }
+            }
+        });
     }
 
 }
