@@ -5,6 +5,7 @@ import com.mashape.unirest.http.Unirest;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import me.joshuamarquez.sails.io.singleton.TestSailsSocketSingleton;
 import me.joshuamarquez.sails.io.util.SIJUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,8 +50,8 @@ public class SailsSocketTest extends SailsServer {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
         // Get global sails socket
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -103,7 +104,7 @@ public class SailsSocketTest extends SailsServer {
     @Test(timeout = TIMEOUT)
     public void shouldGetErrorWhenNotSettingUrl() throws Exception {
         try {
-            testSailsSocketSingleton.getInstance().socket();
+            TestSailsSocketSingleton.getInstance().socket();
         } catch(Exception e) {
             assertThat(e.getMessage(), is("Url must be initialized"));
         }
@@ -113,13 +114,13 @@ public class SailsSocketTest extends SailsServer {
     public void shouldGetErrorWhenSettingSocketUrl() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 try {
-                    testSailsSocketSingleton.getInstance().setUrl("http://127.0.0.1:" + PORT);
+                    TestSailsSocketSingleton.getInstance().setUrl("http://127.0.0.1:" + PORT);
                 } catch (Exception e) {
                     assertThat(e.getMessage(), is("Can not change url while socket is connected"));
                     values.offer("done");
@@ -134,21 +135,21 @@ public class SailsSocketTest extends SailsServer {
 
     @Test(timeout = TIMEOUT)
     public void shouldNotGetErrorWhenSettingSocketUrl() throws Exception {
-        testSailsSocketSingleton.getInstance().setUrl("http://127.0.0.1:" + PORT);
-        assertThat(testSailsSocketSingleton.getInstance().getUrl(), not(url));
+        TestSailsSocketSingleton.getInstance().setUrl("http://127.0.0.1:" + PORT);
+        assertThat(TestSailsSocketSingleton.getInstance().getUrl(), not(url));
     }
 
     @Test(timeout = TIMEOUT)
     public void shouldGetErrorWhenSettingSocketOptions() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
         sailsSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 try {
-                    testSailsSocketSingleton.getInstance().setOptions(new IO.Options());
+                    TestSailsSocketSingleton.getInstance().setOptions(new IO.Options());
                 } catch (Exception e) {
                     assertThat(e.getMessage(), is("Can not change options while socket is connected"));
                     values.offer("done");
@@ -168,8 +169,8 @@ public class SailsSocketTest extends SailsServer {
                 query = "foo=bar";
             }
         };
-        testSailsSocketSingleton.getInstance().setOptions(options);
-        assertThat(testSailsSocketSingleton.getInstance().getOptions().query, is("foo=bar"));
+        TestSailsSocketSingleton.getInstance().setOptions(options);
+        assertThat(TestSailsSocketSingleton.getInstance().getOptions().query, is("foo=bar"));
     }
 
     @Test(timeout = TIMEOUT)
@@ -264,9 +265,9 @@ public class SailsSocketTest extends SailsServer {
     public void testGetHeadersOverride()throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        testSailsSocketSingleton.getInstance().setHeaders(headers);
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setHeaders(headers);
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersOverride", null,
                 new HashMap<String, String>() {
@@ -282,23 +283,23 @@ public class SailsSocketTest extends SailsServer {
 
     @Test
     public void connectNextUrl() throws Exception {
-        testSailsSocketSingleton.getInstance().resetNextConnection();
-        testSailsSocketSingleton.getInstance().setUrl("http://localhost:7331");
-        testSailsSocketSingleton.getInstance().socket().connect();
+        TestSailsSocketSingleton.getInstance().resetNextConnection();
+        TestSailsSocketSingleton.getInstance().setUrl("http://localhost:7331");
+        TestSailsSocketSingleton.getInstance().socket().connect();
 
         Thread.sleep(5000);
-        assertThat(testSailsSocketSingleton.getInstance().socket().isConnected(), is(false));
+        assertThat(TestSailsSocketSingleton.getInstance().socket().isConnected(), is(false));
 
-        testSailsSocketSingleton.getInstance().resetNextConnection();
+        TestSailsSocketSingleton.getInstance().resetNextConnection();
     }
 
     @Test(timeout = TIMEOUT)
     public void testGetHeadersRemove()throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        testSailsSocketSingleton.getInstance().setHeaders(headers);
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setHeaders(headers);
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
 
         sailsSocket.request(TAG, SailsSocketRequest.METHOD_GET, "/headersRemove", null,
                 new HashMap<String, String>() {
@@ -318,9 +319,9 @@ public class SailsSocketTest extends SailsServer {
 
         IO.Options options = new IO.Options();
         options.query = "x-test-query-one={\"foo\":\"bar\"}";
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        testSailsSocketSingleton.getInstance().setOptions(options);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        TestSailsSocketSingleton.getInstance().setOptions(options);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
 
         sailsSocket.get(TAG, "/queryJSON", null, buildResponseListener("get /queryJSON", values));
 
@@ -333,8 +334,8 @@ public class SailsSocketTest extends SailsServer {
     public void testInitialHeaders() throws Exception {
         final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
 
-        testSailsSocketSingleton.getInstance().setUrl(url);
-        SailsSocket sailsSocket = testSailsSocketSingleton.getInstance().socket();
+        TestSailsSocketSingleton.getInstance().setUrl(url);
+        SailsSocket sailsSocket = TestSailsSocketSingleton.getInstance().socket();
         sailsSocket.get(TAG, "/initHeaders", null, buildResponseListener("get /initHeaders", values));
 
         sailsSocket.connect(new HashMap<String, List<String>>() {
