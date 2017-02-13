@@ -1,5 +1,7 @@
 # sails.io.java
 
+[ ![Download](https://api.bintray.com/packages/joshuamarquez/maven/sails.io.java/images/download.svg) ](https://bintray.com/joshuamarquez/maven/sails.io.java/_latestVersion)
+
 This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.io.js) in Java for communicating w/ [Sails](https://github.com/balderdashy/sails/) via sockets
 
 ## Installation
@@ -9,7 +11,7 @@ This is an implementation of [sails.io.js](https://github.com/balderdashy/sails.
 Add it as a gradle dependency, in `build.gradle`.
 
 ```groovy
-compile 'me.joshuamarquez:sails.io.java:0.3.0'
+compile 'me.joshuamarquez:sails.io.java:0.4.0'
 ```
 
 ### Maven
@@ -20,24 +22,21 @@ Add the following dependency to your `pom.xml`.
 <dependency>
   <groupId>me.joshuamarquez</groupId>
   <artifactId>sails.io.java</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 ## Usage
 
-#### Use global socket instance
-
 ```java
-// Get global socket
-SailsIOClient.getInstance().setUrl("http://localhost:1337");
-SailsSocket sailsSocket = SailsIOClient.getInstance().socket();
+// Create socket instance.
+SailsSocket sailsSocket = new SailsSocket(url);
 
-// Connect global socket
+// Connect socket.
 sailsSocket.connect();
 
-// Make GET request
+// Make GET request.
 sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
     @Override
     public void onResponse(JWR response) {
@@ -51,21 +50,6 @@ sailsSocket.get("MyTAG", "/path", null, new SailsSocketResponse.Listener() {
 ```
 
 **Note: A tag should be provided to each request in order to be possible to remove requests later if they are in request queue due to lack of connection.**
-
-#### Create new socket instance
-
-```java
-SailsSocket sailsSocket = new SailsSocket(url);
-sailsSocket.connect();
-```
-
-#### Set Global Socket Options
-
-Set query options for global socket initial connection.
-
-```java
-SailsIOClient.getInstance().setOptions(new IO.Options(){ { query = "token=yQ29sFHAqw4.."; } });
-```
 
 ## Properties
 
@@ -84,22 +68,14 @@ private Map<String, String> headers = new HashMap<String, String>() {
 };
 ```
 
-#### Setting global headers
-
-This headers will be append to all socket requests.
-
-```java
-// Set global socket headers
-SailsIOClient.getInstance().setHeaders(headers);
-```
-
 #### Setting socket headers
 
 This headers will be append to all requests made by this socket.
 
 ```java
-// Set socket headers
+// Set socket headers.
 SailsSocket sailsSocket = new SailsSocket(url, opts);
+headers.put("Accept", "application/json");
 sailsSocket.setHeaders(headers);
 ```
 
