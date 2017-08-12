@@ -1,5 +1,11 @@
 # Change Log
 
+### v0.4.1
+
+ _2017-08-11_ [v0.4.0...v0.4.1](https://github.com/joshuamarquez/sails.io.java/compare/v0.4.0...v0.4.1)
+
+* [CHANGED] `socket.io-client` upgraded to version `1.0.0`. [#11](https://github.com/joshuamarquez/sails.io.java/pull/11).
+
 ### v0.4.0
 
  _2017-02-12_ [v0.3.0...v0.4.0](https://github.com/joshuamarquez/sails.io.java/compare/v0.3.0...v0.4.0)
