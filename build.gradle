@@ -59,7 +59,7 @@ dependencies {
     testCompile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
 
     compile 'org.json:json:20160212'
-    compile ('io.socket:socket.io-client:0.7.0') {
+    compile ('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is already provided
         exclude group: 'org.json', module: 'json'
     }
